@@ -1,0 +1,117 @@
+//Check Network
+	
+	#ping 8.8.8.8
+
+(if network do not work)
+	
+	#dhcpcd
+
+//Partition the disks(/dev/sda)
+
+	#lsblk		<-- check disks
+	#cfdisk /dev/sda
+
+------------------------------------------
+|/dev/sda1 | 30G  |        bootable      |
+------------------------------------------
+|/dev/sda2 | 20G  | linux swap / solaris |
+------------------------------------------
+|/dev/sda3 | 200G |                      |
+------------------------------------------
+
+//Format the partition /dev/sda1
+
+	#mkfs.ext4 /dev/sda1
+
+//Activate the swap partition
+
+	#mkswap /dev/sda2
+	#swapon /dev/sda2
+
+//Format the partition /dev/sda3
+
+	#mkfs.ext4 /dev/sda3
+
+//Mount the file systems
+
+	#mount /dev/sda1 /mnt
+	#mkdir /mnt/home
+	#mount /dev/sda3 /mnt/home
+
+//Select the mirrors
+
+	#pacman -Syu
+	#pacman -S reflector
+	#reflector --verbose -l 5 --sort rate --save /etc/pacman.d/mirrorlist
+
+//Install arch linux base packages
+
+	#pacstrap -i /mnt base base-devel
+
+//Configure the system
+
+	#genfstab -U /mnt >> /mnt/etc/fstab
+
+//Chroot
+	
+	#arch-chroot /mnt
+
+//Time Zone
+	
+	#ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
+	#hwclock --systohc
+
+//Locale
+	
+	#nano /etc/locale.gen
+	#locale-gen
+	#nano /etc/locale.conf
+
+/etc/locale.conf:
+-----------------
+LANG=en_US.UTF-8
+-----------------
+
+//Configure the repository
+	#nano /etc/pacman.conf
+	(uncomment the line: [multilib] and include = /etc/pacman.d/mirrorlist
+
+//Hostname
+	
+	#nano /etc/hostname
+	#/etc/hosts
+
+/etc/hosts:
+------------------------------------------------------------
+127.0.0.1	localhost
+::1		localhost
+127.0.1.1	myhostname.localdomain		myhostname
+------------------------------------------------------------
+
+//Create new user
+	#pacman -S sudo bash-completion
+	#useradd -m -g users -G wheel,storage,power -s /bin/bash myname
+	#passwd myname
+
+//Allow the users in wheel group to be able to preformance administrative tasks with sudo:
+	#EDITOR=nano visudo
+	(Uncomment the line : %wheel ALL=(ALL))
+
+//Network configuration
+
+	#pacman -S networkmanager iw
+	#systemctl enable NetworkManager.service
+
+//Initramfs
+
+	#mkinitcpio -p linux
+
+//Root password
+
+	#passwd
+
+//Boot loader
+
+	#pacman -S grub intel-ucode
+	#grub-install /dev/sda
+	#grub-mkconfig -o /boot/grub/grub.cfg
