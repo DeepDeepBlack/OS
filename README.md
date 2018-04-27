@@ -1,2 +1,0 @@
-# OS
-Install OS
