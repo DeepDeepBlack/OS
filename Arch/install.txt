@@ -40,7 +40,7 @@
 
 //Select the mirrors
 
-	#pacman -Syu
+	#pacman -Sy
 	#pacman -S reflector
 	#reflector --verbose -l 5 --sort rate --save /etc/pacman.d/mirrorlist
 
@@ -88,6 +88,10 @@ LANG=en_US.UTF-8
 127.0.1.1	myhostname.localdomain		myhostname
 ------------------------------------------------------------
 
+//Set root password
+	
+	#passwd
+
 //Create new user
 	#pacman -S sudo bash-completion
 	#useradd -m -g users -G wheel,storage,power -s /bin/bash myname
@@ -106,12 +110,14 @@ LANG=en_US.UTF-8
 
 	#mkinitcpio -p linux
 
-//Root password
-
-	#passwd
-
 //Boot loader
 
 	#pacman -S grub intel-ucode
 	#grub-install /dev/sda
 	#grub-mkconfig -o /boot/grub/grub.cfg
+
+//Unmount the partition and reboot
+
+	#umount -R /mnt
+	#exit
+	#reboot
