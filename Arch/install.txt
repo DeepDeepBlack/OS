@@ -105,6 +105,7 @@ LANG=en_US.UTF-8
 
 	#pacman -S networkmanager iw
 	#systemctl enable NetworkManager.service
+	#systemctl disable dhcpcd@wl0s25.service
 
 //Initramfs
 
